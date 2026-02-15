@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Plus, LayoutDashboard, History, FileText, TrendingUp, CheckCircle, Share2, X, Info, Settings2, Menu, Sparkles, RefreshCcw, BookOpen } from 'lucide-react';
+import { Plus, LayoutDashboard, History, FileText, TrendingUp, CheckCircle, Share2, X, Info, Settings2, Menu, Sparkles, RefreshCcw, BookOpen, HelpCircle } from 'lucide-react';
 import { Transaction, AccountType, TransactionType, DEFAULT_CATEGORIES } from './types';
 import Dashboard from './components/Dashboard';
 import Ledger from './components/Ledger';
@@ -12,18 +12,37 @@ import { getFinancialInsights } from './geminiService';
 const App: React.FC = () => {
   // Persistence State
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
-    const saved = localStorage.getItem('ryan-money-monitor-data');
-    return saved ? JSON.parse(saved) : [];
+    // Migration check: check for old key, move to new generic key if exists
+    const oldSaved = localStorage.getItem('ryan-money-monitor-data');
+    const genericSaved = localStorage.getItem('money-monitor-data');
+    if (oldSaved && !genericSaved) {
+      localStorage.setItem('money-monitor-data', oldSaved);
+      localStorage.removeItem('ryan-money-monitor-data');
+      return JSON.parse(oldSaved);
+    }
+    return genericSaved ? JSON.parse(genericSaved) : [];
   });
 
   const [categories, setCategories] = useState<string[]>(() => {
-    const saved = localStorage.getItem('ryan-money-monitor-categories');
-    return saved ? JSON.parse(saved) : DEFAULT_CATEGORIES;
+    const oldSaved = localStorage.getItem('ryan-money-monitor-categories');
+    const genericSaved = localStorage.getItem('money-monitor-categories');
+    if (oldSaved && !genericSaved) {
+      localStorage.setItem('money-monitor-categories', oldSaved);
+      localStorage.removeItem('ryan-money-monitor-categories');
+      return JSON.parse(oldSaved);
+    }
+    return genericSaved ? JSON.parse(genericSaved) : DEFAULT_CATEGORIES;
   });
 
   const [startingBalance, setStartingBalance] = useState<number>(() => {
-    const saved = localStorage.getItem('ryan-money-monitor-start');
-    return saved ? parseFloat(saved) : 0;
+    const oldSaved = localStorage.getItem('ryan-money-monitor-start');
+    const genericSaved = localStorage.getItem('money-monitor-start');
+    if (oldSaved && !genericSaved) {
+      localStorage.setItem('money-monitor-start', oldSaved);
+      localStorage.removeItem('ryan-money-monitor-start');
+      return parseFloat(oldSaved);
+    }
+    return genericSaved ? parseFloat(genericSaved) : 0;
   });
   
   // App State
@@ -81,9 +100,9 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (!isSharedMode) {
-      localStorage.setItem('ryan-money-monitor-data', JSON.stringify(transactions));
-      localStorage.setItem('ryan-money-monitor-categories', JSON.stringify(categories));
-      localStorage.setItem('ryan-money-monitor-start', startingBalance.toString());
+      localStorage.setItem('money-monitor-data', JSON.stringify(transactions));
+      localStorage.setItem('money-monitor-categories', JSON.stringify(categories));
+      localStorage.setItem('money-monitor-start', startingBalance.toString());
       setShowSavedToast(true);
       const timer = setTimeout(() => setShowSavedToast(false), 2000);
       return () => clearTimeout(timer);
@@ -191,8 +210,8 @@ const App: React.FC = () => {
   };
 
   const exitSharedMode = () => {
-    const saved = localStorage.getItem('ryan-money-monitor-data');
-    const start = localStorage.getItem('ryan-money-monitor-start');
+    const saved = localStorage.getItem('money-monitor-data');
+    const start = localStorage.getItem('money-monitor-start');
     setTransactions(saved ? JSON.parse(saved) : []);
     setStartingBalance(start ? parseFloat(start) : 0);
     setIsSharedMode(false);
@@ -258,8 +277,8 @@ const App: React.FC = () => {
              </button>
              <div className="h-px bg-slate-100 my-4" />
              <button onClick={() => { setIsAboutOpen(true); setIsDrawerOpen(false); }} className="w-full flex items-center space-x-4 px-5 py-4 rounded-2xl text-slate-500 active:bg-slate-100">
-                <BookOpen size={22} />
-                <span className="font-bold text-base">How it Works</span>
+                <HelpCircle size={22} />
+                <span className="font-bold text-base">Guide & FAQ</span>
              </button>
              <button onClick={() => { setIsReportOpen(true); setIsDrawerOpen(false); }} className="w-full flex items-center space-x-4 px-5 py-4 rounded-2xl text-slate-500 active:bg-slate-100">
                 <FileText size={22} />
@@ -286,14 +305,19 @@ const App: React.FC = () => {
 
       {/* Desktop Sidebar */}
       <aside className={`no-print hidden md:flex w-72 bg-slate-900 text-white p-8 flex-col space-y-8 h-screen ${isSharedMode ? 'pt-24' : ''}`}>
-        <div className="flex items-center space-x-3">
-          <div className="p-2.5 bg-indigo-500 rounded-2xl shadow-lg">
-            <TrendingUp size={28} className="text-white" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="p-2.5 bg-indigo-500 rounded-2xl shadow-lg">
+              <TrendingUp size={28} className="text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-black uppercase tracking-tight">Savings</h1>
+              <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Monitor</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-black uppercase tracking-tight">Savings</h1>
-            <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Monitor</p>
-          </div>
+          <button onClick={() => setIsAboutOpen(true)} className="p-2 text-slate-500 hover:text-white transition-colors">
+            <HelpCircle size={18} />
+          </button>
         </div>
 
         <nav className="flex-1 space-y-2">
@@ -344,7 +368,9 @@ const App: React.FC = () => {
             {!isSharedMode && showSavedToast && <CheckCircle size={14} className="text-green-500" />}
           </div>
           
-          <div className="w-9" />
+          <button onClick={() => setIsAboutOpen(true)} className="p-2 bg-indigo-50 rounded-xl text-indigo-600 ios-tap border border-indigo-100">
+             <HelpCircle size={22} strokeWidth={3} />
+           </button>
         </header>
 
         <main 
@@ -369,6 +395,9 @@ const App: React.FC = () => {
                   <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 blur-3xl -mr-10 -mt-10"></div>
                   <p className="text-[10px] font-black uppercase tracking-widest mb-1 text-slate-400">Current Balance</p>
                   <p className="text-4xl md:text-5xl font-black tracking-tighter">${totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                  <button onClick={() => setIsAboutOpen(true)} className="mt-4 text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-white transition-colors underline underline-offset-4">
+                    Learn how your data is saved
+                  </button>
                 </div>
               </div>
             </section>
@@ -382,6 +411,7 @@ const App: React.FC = () => {
                   aiInsight={aiInsight} 
                   onRefreshInsight={fetchInsights} 
                   isLoadingInsight={isLoadingInsight} 
+                  onShowInfo={() => setIsAboutOpen(true)}
                 />
               ) : (
                 <Ledger transactions={transactions} onEdit={handleEditRequest} onDelete={handleDeleteTransaction} isReadOnly={isSharedMode} />

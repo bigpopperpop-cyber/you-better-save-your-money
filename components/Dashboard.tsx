@@ -2,7 +2,7 @@
 import React, { useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Transaction, TransactionType, ChartDataPoint } from '../types';
-import { Sparkles, RefreshCw, ArrowUpRight } from 'lucide-react';
+import { Sparkles, RefreshCw, ArrowUpRight, Info } from 'lucide-react';
 
 interface DashboardProps {
   transactions: Transaction[];
@@ -11,9 +11,18 @@ interface DashboardProps {
   aiInsight: string;
   onRefreshInsight: () => void;
   isLoadingInsight: boolean;
+  onShowInfo: () => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ transactions, balance, startingBalance, aiInsight, onRefreshInsight, isLoadingInsight }) => {
+const Dashboard: React.FC<DashboardProps> = ({ 
+  transactions, 
+  balance, 
+  startingBalance, 
+  aiInsight, 
+  onRefreshInsight, 
+  isLoadingInsight,
+  onShowInfo
+}) => {
   const chartData = useMemo(() => {
     if (transactions.length === 0) {
       const today = new Date().toISOString().split('T')[0];
@@ -158,7 +167,10 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, balance, startingBa
         <div className="mt-8 pt-6 border-t border-slate-800 shrink-0">
            <div className="flex justify-between items-center mb-4">
               <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Mastery Progress</p>
-              <span className="text-[10px] font-black text-indigo-400 bg-indigo-400/10 px-2 py-1 rounded-md uppercase">Novice</span>
+              <button onClick={onShowInfo} className="text-[10px] font-black text-indigo-400 bg-indigo-400/10 px-2 py-1 rounded-md uppercase flex items-center space-x-1 hover:bg-indigo-400 hover:text-white transition-all">
+                <Info size={10} />
+                <span>Novice Guide</span>
+              </button>
            </div>
            <div className="flex justify-between items-end mb-3">
               <span className="text-2xl font-black">${balance.toLocaleString()}</span>

@@ -9,7 +9,7 @@ interface AboutProps {
 
 const About: React.FC<AboutProps> = ({ onClose, generateShareLink }) => {
   return (
-    <div className="fixed inset-0 z-[400] flex items-center justify-center p-0 md:p-6 bg-slate-900/95 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[500] flex items-center justify-center p-0 md:p-6 bg-slate-900/95 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="bg-white w-full max-w-4xl h-full md:h-[90vh] md:rounded-[3rem] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-6 md:p-8 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
