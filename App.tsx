@@ -10,39 +10,20 @@ import About from './components/About';
 import { getFinancialInsights } from './geminiService';
 
 const App: React.FC = () => {
-  // Persistence State
+  // Persistence State - Using sanitized generic keys
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
-    // Migration check: check for old key, move to new generic key if exists
-    const oldSaved = localStorage.getItem('ryan-money-monitor-data');
-    const genericSaved = localStorage.getItem('money-monitor-data');
-    if (oldSaved && !genericSaved) {
-      localStorage.setItem('money-monitor-data', oldSaved);
-      localStorage.removeItem('ryan-money-monitor-data');
-      return JSON.parse(oldSaved);
-    }
-    return genericSaved ? JSON.parse(genericSaved) : [];
+    const saved = localStorage.getItem('money-monitor-v2-data');
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [categories, setCategories] = useState<string[]>(() => {
-    const oldSaved = localStorage.getItem('ryan-money-monitor-categories');
-    const genericSaved = localStorage.getItem('money-monitor-categories');
-    if (oldSaved && !genericSaved) {
-      localStorage.setItem('money-monitor-categories', oldSaved);
-      localStorage.removeItem('ryan-money-monitor-categories');
-      return JSON.parse(oldSaved);
-    }
-    return genericSaved ? JSON.parse(genericSaved) : DEFAULT_CATEGORIES;
+    const saved = localStorage.getItem('money-monitor-v2-categories');
+    return saved ? JSON.parse(saved) : DEFAULT_CATEGORIES;
   });
 
   const [startingBalance, setStartingBalance] = useState<number>(() => {
-    const oldSaved = localStorage.getItem('ryan-money-monitor-start');
-    const genericSaved = localStorage.getItem('money-monitor-start');
-    if (oldSaved && !genericSaved) {
-      localStorage.setItem('money-monitor-start', oldSaved);
-      localStorage.removeItem('ryan-money-monitor-start');
-      return parseFloat(oldSaved);
-    }
-    return genericSaved ? parseFloat(genericSaved) : 0;
+    const saved = localStorage.getItem('money-monitor-v2-start');
+    return saved ? parseFloat(saved) : 0;
   });
   
   // App State
@@ -100,9 +81,9 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (!isSharedMode) {
-      localStorage.setItem('money-monitor-data', JSON.stringify(transactions));
-      localStorage.setItem('money-monitor-categories', JSON.stringify(categories));
-      localStorage.setItem('money-monitor-start', startingBalance.toString());
+      localStorage.setItem('money-monitor-v2-data', JSON.stringify(transactions));
+      localStorage.setItem('money-monitor-v2-categories', JSON.stringify(categories));
+      localStorage.setItem('money-monitor-v2-start', startingBalance.toString());
       setShowSavedToast(true);
       const timer = setTimeout(() => setShowSavedToast(false), 2000);
       return () => clearTimeout(timer);
@@ -210,8 +191,8 @@ const App: React.FC = () => {
   };
 
   const exitSharedMode = () => {
-    const saved = localStorage.getItem('money-monitor-data');
-    const start = localStorage.getItem('money-monitor-start');
+    const saved = localStorage.getItem('money-monitor-v2-data');
+    const start = localStorage.getItem('money-monitor-v2-start');
     setTransactions(saved ? JSON.parse(saved) : []);
     setStartingBalance(start ? parseFloat(start) : 0);
     setIsSharedMode(false);
@@ -219,14 +200,14 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="h-full w-full flex flex-col md:flex-row bg-[#f8fafc] text-slate-900 overflow-hidden select-none">
+    <div className="h-full w-full flex flex-col md:flex-row bg-transparent text-slate-900 overflow-hidden select-none">
       {isSharedMode && (
-        <div className="fixed top-0 left-0 right-0 z-[120] bg-indigo-600 text-white pt-10 pb-3 px-4 flex items-center justify-between shadow-xl safe-top">
+        <div className="fixed top-0 left-0 right-0 z-[120] bg-emerald-600 text-white pt-10 pb-3 px-4 flex items-center justify-between shadow-xl safe-top">
           <div className="flex items-center space-x-2">
             <Info size={16} />
             <span className="text-xs font-black uppercase tracking-tighter">Shared View</span>
           </div>
-          <button onClick={exitSharedMode} className="px-4 py-2 bg-indigo-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest ios-tap">
+          <button onClick={exitSharedMode} className="px-4 py-2 bg-emerald-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest ios-tap">
             Exit
           </button>
         </div>
@@ -242,7 +223,7 @@ const App: React.FC = () => {
         }}
       >
         <div className={`p-2 bg-white rounded-full shadow-lg border border-slate-100 ${isLoadingInsight ? 'animate-spin' : ''}`} style={{ transform: `rotate(${pullDistance * 3}deg)` }}>
-          <RefreshCcw size={20} className="text-indigo-600" />
+          <RefreshCcw size={20} className="text-emerald-600" />
         </div>
       </div>
 
@@ -259,7 +240,7 @@ const App: React.FC = () => {
           <div className="pt-[env(safe-area-inset-top,40px)] px-8 pb-6 border-b border-slate-100">
             <div className="flex items-center justify-between">
                <div className="flex items-center space-x-3">
-                <div className="p-2 bg-indigo-600 rounded-xl shadow-lg"><TrendingUp size={20} className="text-white" /></div>
+                <div className="p-2 bg-emerald-600 rounded-xl shadow-lg"><TrendingUp size={20} className="text-white" /></div>
                 <h2 className="text-xl font-black uppercase tracking-tighter">Menu</h2>
               </div>
               <button onClick={() => setIsDrawerOpen(false)} className="p-2 text-slate-400 bg-slate-50 rounded-full ios-tap"><X size={20} /></button>
@@ -267,11 +248,11 @@ const App: React.FC = () => {
           </div>
           
           <nav className="flex-1 p-6 space-y-2 overflow-y-auto hide-scrollbar">
-             <button onClick={() => { setActiveTab('dashboard'); setIsDrawerOpen(false); }} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all ${activeTab === 'dashboard' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-100' : 'text-slate-500 active:bg-slate-100'}`}>
+             <button onClick={() => { setActiveTab('dashboard'); setIsDrawerOpen(false); }} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all ${activeTab === 'dashboard' ? 'bg-emerald-600 text-white shadow-xl shadow-emerald-100' : 'text-slate-500 active:bg-slate-100'}`}>
                 <LayoutDashboard size={22} strokeWidth={2.5} />
                 <span className="font-bold text-base">Dashboard</span>
              </button>
-             <button onClick={() => { setActiveTab('ledger'); setIsDrawerOpen(false); }} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all ${activeTab === 'ledger' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-100' : 'text-slate-500 active:bg-slate-100'}`}>
+             <button onClick={() => { setActiveTab('ledger'); setIsDrawerOpen(false); }} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all ${activeTab === 'ledger' ? 'bg-emerald-600 text-white shadow-xl shadow-emerald-100' : 'text-slate-500 active:bg-slate-100'}`}>
                 <History size={22} strokeWidth={2.5} />
                 <span className="font-bold text-base">Activity History</span>
              </button>
@@ -297,7 +278,7 @@ const App: React.FC = () => {
           <div className="p-8 border-t border-slate-100 bg-slate-50/50 pb-[env(safe-area-inset-bottom,20px)]">
              <div className="flex items-center space-x-3 text-slate-400">
                 <Info size={16} />
-                <span className="text-[10px] font-black uppercase tracking-widest">Savings Monitor v2.1</span>
+                <span className="text-[10px] font-black uppercase tracking-widest">Money Monitor v2.1</span>
              </div>
           </div>
         </aside>
@@ -307,11 +288,11 @@ const App: React.FC = () => {
       <aside className={`no-print hidden md:flex w-72 bg-slate-900 text-white p-8 flex-col space-y-8 h-screen ${isSharedMode ? 'pt-24' : ''}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="p-2.5 bg-indigo-500 rounded-2xl shadow-lg">
+            <div className="p-2.5 bg-emerald-500 rounded-2xl shadow-lg">
               <TrendingUp size={28} className="text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-black uppercase tracking-tight">Savings</h1>
+              <h1 className="text-xl font-black uppercase tracking-tight">Money</h1>
               <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Monitor</p>
             </div>
           </div>
@@ -321,11 +302,11 @@ const App: React.FC = () => {
         </div>
 
         <nav className="flex-1 space-y-2">
-          <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all duration-300 ${activeTab === 'dashboard' ? 'bg-indigo-600 shadow-xl' : 'hover:bg-slate-800 opacity-60'}`}>
+          <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all duration-300 ${activeTab === 'dashboard' ? 'bg-emerald-600 shadow-xl' : 'hover:bg-slate-800 opacity-60'}`}>
             <LayoutDashboard size={22} strokeWidth={2.5} />
             <span className="font-bold">Home</span>
           </button>
-          <button onClick={() => setActiveTab('ledger')} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all duration-300 ${activeTab === 'ledger' ? 'bg-indigo-600 shadow-xl' : 'hover:bg-slate-800 opacity-60'}`}>
+          <button onClick={() => setActiveTab('ledger')} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all duration-300 ${activeTab === 'ledger' ? 'bg-emerald-600 shadow-xl' : 'hover:bg-slate-800 opacity-60'}`}>
             <History size={22} strokeWidth={2.5} />
             <span className="font-bold">History</span>
           </button>
@@ -337,7 +318,7 @@ const App: React.FC = () => {
 
         <div className="space-y-3 pt-6 border-t border-slate-800/50">
           {!isSharedMode && (
-            <button onClick={() => { setEditingTransaction(null); setIsFormOpen(true); }} className="w-full bg-white text-indigo-600 font-black py-4 rounded-2xl flex items-center justify-center space-x-3 ios-tap">
+            <button onClick={() => { setEditingTransaction(null); setIsFormOpen(true); }} className="w-full bg-white text-emerald-600 font-black py-4 rounded-2xl flex items-center justify-center space-x-3 ios-tap hover:bg-emerald-50 transition-colors">
               <Plus size={22} strokeWidth={3} />
               <span>Add Entry</span>
             </button>
@@ -346,7 +327,7 @@ const App: React.FC = () => {
             <FileText size={18} />
             <span>Reports</span>
           </button>
-          <button onClick={generateShareLink} className="w-full bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 font-black py-3 rounded-2xl flex items-center justify-center space-x-2 transition">
+          <button onClick={generateShareLink} className="w-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 font-black py-3 rounded-2xl flex items-center justify-center space-x-2 transition">
             <Share2 size={16} />
             <span className="text-xs uppercase tracking-widest">Share</span>
           </button>
@@ -358,17 +339,17 @@ const App: React.FC = () => {
         className={`flex-1 flex flex-col min-h-0 overflow-hidden relative transition-all duration-200 ${isSharedMode ? 'mt-14' : ''}`}
         style={{ transform: `translateY(${pullDistance}px)` }}
       >
-        <header className="md:hidden pt-[env(safe-area-inset-top,44px)] pb-3 px-6 bg-white/80 backdrop-blur-xl border-b border-slate-100 flex items-center justify-between sticky top-0 z-40">
-           <button onClick={() => setIsDrawerOpen(true)} className="p-2 bg-slate-50 rounded-xl border border-slate-100 text-slate-900 ios-tap">
+        <header className="md:hidden pt-[env(safe-area-inset-top,44px)] pb-3 px-6 bg-white/40 backdrop-blur-xl border-b border-white/20 flex items-center justify-between sticky top-0 z-40">
+           <button onClick={() => setIsDrawerOpen(true)} className="p-2 bg-white/60 rounded-xl border border-white text-slate-900 ios-tap">
              <Menu size={22} strokeWidth={3} />
            </button>
            
            <div className="flex items-center space-x-2">
             <h1 className="text-lg font-black tracking-tighter text-slate-900 uppercase">Money Monitor</h1>
-            {!isSharedMode && showSavedToast && <CheckCircle size={14} className="text-green-500" />}
+            {!isSharedMode && showSavedToast && <CheckCircle size={14} className="text-emerald-500" />}
           </div>
           
-          <button onClick={() => setIsAboutOpen(true)} className="p-2 bg-indigo-50 rounded-xl text-indigo-600 ios-tap border border-indigo-100">
+          <button onClick={() => setIsAboutOpen(true)} className="p-2 bg-emerald-50/60 rounded-xl text-emerald-600 ios-tap border border-emerald-100">
              <HelpCircle size={22} strokeWidth={3} />
            </button>
         </header>
@@ -378,7 +359,7 @@ const App: React.FC = () => {
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
-          className="flex-1 overflow-y-auto px-4 md:px-12 pt-6 pb-28 md:pb-12 hide-scrollbar bg-slate-50/30"
+          className="flex-1 overflow-y-auto px-4 md:px-12 pt-6 pb-28 md:pb-12 hide-scrollbar"
           style={{ 
             paddingLeft: 'max(1rem, env(safe-area-inset-left))', 
             paddingRight: 'max(1rem, env(safe-area-inset-right))' 
@@ -387,15 +368,15 @@ const App: React.FC = () => {
           <div className="max-w-5xl mx-auto space-y-6 md:space-y-10 h-full flex flex-col min-h-0">
             <section className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 shrink-0">
               <div className="hidden md:block">
-                <h2 className="text-3xl font-black text-slate-900 leading-tight">My <span className="text-indigo-600">Savings</span></h2>
+                <h2 className="text-3xl font-black text-slate-900 leading-tight">My <span className="text-emerald-600">Savings</span></h2>
                 <p className="text-slate-500 font-medium">Tracking your financial progress.</p>
               </div>
               <div className="w-full lg:w-auto">
                 <div className="p-6 md:p-8 lg:p-10 rounded-[2.5rem] bg-slate-900 text-white shadow-2xl relative text-center lg:text-left overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 blur-3xl -mr-10 -mt-10"></div>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/20 blur-3xl -mr-10 -mt-10"></div>
                   <p className="text-[10px] font-black uppercase tracking-widest mb-1 text-slate-400">Current Balance</p>
                   <p className="text-4xl md:text-5xl font-black tracking-tighter">${totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
-                  <button onClick={() => setIsAboutOpen(true)} className="mt-4 text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-white transition-colors underline underline-offset-4">
+                  <button onClick={() => setIsAboutOpen(true)} className="mt-4 text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:text-white transition-colors underline underline-offset-4">
                     Learn how your data is saved
                   </button>
                 </div>
@@ -423,7 +404,7 @@ const App: React.FC = () => {
         <nav className="no-print md:hidden landscape-compact-nav fixed bottom-6 left-6 right-6 h-18 md:h-20 bg-slate-900 rounded-[2.5rem] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] border border-slate-800 flex items-center justify-between px-10 z-[150] animate-in slide-in-from-bottom-10 duration-500">
           <button 
             onClick={() => setActiveTab('dashboard')} 
-            className={`flex flex-col items-center space-y-1 transition-all duration-300 ios-tap ${activeTab === 'dashboard' ? 'text-indigo-400 scale-105' : 'text-slate-500'}`}
+            className={`flex flex-col items-center space-y-1 transition-all duration-300 ios-tap ${activeTab === 'dashboard' ? 'text-emerald-400 scale-105' : 'text-slate-500'}`}
           >
             <LayoutDashboard size={24} strokeWidth={activeTab === 'dashboard' ? 3 : 2} />
             <span className="text-[10px] font-black uppercase tracking-tighter">Dash</span>
@@ -432,7 +413,7 @@ const App: React.FC = () => {
           {!isSharedMode && (
             <button 
               onClick={() => { setEditingTransaction(null); setIsFormOpen(true); }} 
-              className="plus-btn bg-indigo-600 text-white p-4 md:p-4.5 rounded-[2rem] shadow-xl shadow-indigo-900/30 -mt-10 md:-mt-12 ring-[8px] md:ring-[10px] ring-white ios-tap"
+              className="plus-btn bg-emerald-600 text-white p-4 md:p-4.5 rounded-[2rem] shadow-xl shadow-emerald-900/30 -mt-10 md:-mt-12 ring-[8px] md:ring-[10px] ring-white/60 backdrop-blur-sm ios-tap"
             >
               <Plus size={32} strokeWidth={3} />
             </button>
@@ -440,7 +421,7 @@ const App: React.FC = () => {
           
           <button 
             onClick={() => setActiveTab('ledger')} 
-            className={`flex flex-col items-center space-y-1 transition-all duration-300 ios-tap ${activeTab === 'ledger' ? 'text-indigo-400 scale-105' : 'text-slate-500'}`}
+            className={`flex flex-col items-center space-y-1 transition-all duration-300 ios-tap ${activeTab === 'ledger' ? 'text-emerald-400 scale-105' : 'text-slate-500'}`}
           >
             <History size={24} strokeWidth={activeTab === 'ledger' ? 3 : 2} />
             <span className="text-[10px] font-black uppercase tracking-tighter">Logs</span>
@@ -464,7 +445,7 @@ const App: React.FC = () => {
                   step="0.01"
                   value={tempStartBalance}
                   onChange={(e) => setTempStartBalance(e.target.value)}
-                  className="w-full pl-10 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-indigo-500 outline-none text-2xl font-black"
+                  className="w-full pl-10 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-emerald-500 outline-none text-2xl font-black"
                 />
               </div>
               <button 

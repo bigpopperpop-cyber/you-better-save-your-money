@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#4f46e5">
+    <meta name="theme-color" content="#059669">
     <title>Money Monitor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -19,7 +19,7 @@
         margin: 0;
         padding: 0;
         overflow: hidden;
-        background-color: #f8fafc;
+        background-color: #f0fdf4; /* emerald-50 */
         -webkit-text-size-adjust: 100%;
       }
       body {
@@ -28,10 +28,15 @@
         position: fixed;
         width: 100%;
         overscroll-behavior: none;
+        /* Money Theme Pattern */
+        background-image: 
+          radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.8) 0%, rgba(240, 253, 244, 0.4) 100%),
+          url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23059669' fill-opacity='0.03' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM24 30V24h-2v6h-6v2h6v6h2v-6h6v-2h-6zM6 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 50a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM30 34a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm30 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM54 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM18 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM42 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'/%3E%3C/g%3E%3C/svg%3E");
       }
       @media print {
         .no-print { display: none !important; }
         .print-only { display: block !important; }
+        body { background: white !important; }
       }
       .print-only { display: none; }
       
