@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Plus, LayoutDashboard, History, FileText, TrendingUp, CheckCircle, Share2, X, Info, Settings2, Menu, Sparkles, RefreshCcw } from 'lucide-react';
+import { Plus, LayoutDashboard, History, FileText, TrendingUp, CheckCircle, Share2, X, Info, Settings2, Menu, Sparkles, RefreshCcw, BookOpen } from 'lucide-react';
 import { Transaction, AccountType, TransactionType, DEFAULT_CATEGORIES } from './types';
 import Dashboard from './components/Dashboard';
 import Ledger from './components/Ledger';
 import TransactionForm from './components/TransactionForm';
 import Report from './components/Report';
+import About from './components/About';
 import { getFinancialInsights } from './geminiService';
 
 const App: React.FC = () => {
@@ -29,6 +30,7 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'ledger'>('dashboard');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
@@ -61,7 +63,6 @@ const App: React.FC = () => {
       }
     }
 
-    // Auto-close drawer and reset layout on resize/orientation change
     const handleResize = () => {
       if (window.innerWidth >= 768) {
         setIsDrawerOpen(false);
@@ -256,6 +257,10 @@ const App: React.FC = () => {
                 <span className="font-bold text-base">Activity History</span>
              </button>
              <div className="h-px bg-slate-100 my-4" />
+             <button onClick={() => { setIsAboutOpen(true); setIsDrawerOpen(false); }} className="w-full flex items-center space-x-4 px-5 py-4 rounded-2xl text-slate-500 active:bg-slate-100">
+                <BookOpen size={22} />
+                <span className="font-bold text-base">How it Works</span>
+             </button>
              <button onClick={() => { setIsReportOpen(true); setIsDrawerOpen(false); }} className="w-full flex items-center space-x-4 px-5 py-4 rounded-2xl text-slate-500 active:bg-slate-100">
                 <FileText size={22} />
                 <span className="font-bold text-base">Reports & Printing</span>
@@ -273,7 +278,7 @@ const App: React.FC = () => {
           <div className="p-8 border-t border-slate-100 bg-slate-50/50 pb-[env(safe-area-inset-bottom,20px)]">
              <div className="flex items-center space-x-3 text-slate-400">
                 <Info size={16} />
-                <span className="text-[10px] font-black uppercase tracking-widest">Ryan's Money Monitor</span>
+                <span className="text-[10px] font-black uppercase tracking-widest">Savings Monitor v2.1</span>
              </div>
           </div>
         </aside>
@@ -287,7 +292,7 @@ const App: React.FC = () => {
           </div>
           <div>
             <h1 className="text-xl font-black uppercase tracking-tight">Savings</h1>
-            <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Ryan's Monitor</p>
+            <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Monitor</p>
           </div>
         </div>
 
@@ -299,6 +304,10 @@ const App: React.FC = () => {
           <button onClick={() => setActiveTab('ledger')} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all duration-300 ${activeTab === 'ledger' ? 'bg-indigo-600 shadow-xl' : 'hover:bg-slate-800 opacity-60'}`}>
             <History size={22} strokeWidth={2.5} />
             <span className="font-bold">History</span>
+          </button>
+          <button onClick={() => setIsAboutOpen(true)} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all duration-300 text-slate-400 hover:bg-slate-800 opacity-60`}>
+            <BookOpen size={22} />
+            <span className="font-bold">App Guide</span>
           </button>
         </nav>
 
@@ -331,7 +340,7 @@ const App: React.FC = () => {
            </button>
            
            <div className="flex items-center space-x-2">
-            <h1 className="text-lg font-black tracking-tighter text-slate-900 uppercase">Ryan's Money</h1>
+            <h1 className="text-lg font-black tracking-tighter text-slate-900 uppercase">Money Monitor</h1>
             {!isSharedMode && showSavedToast && <CheckCircle size={14} className="text-green-500" />}
           </div>
           
@@ -411,7 +420,7 @@ const App: React.FC = () => {
 
       {isSettingsOpen && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-in fade-in duration-300">
-           <div className="bg-white w-full max-w-sm p-8 rounded-[3rem] shadow-2xl animate-in zoom-in-95 duration-200">
+           <div className="bg-white w-full max-sm p-8 rounded-[3rem] shadow-2xl animate-in zoom-in-95 duration-200">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Starting Fund</h3>
                 <button onClick={() => setIsSettingsOpen(false)} className="p-2 bg-slate-50 rounded-full ios-tap"><X size={20} /></button>
@@ -448,6 +457,7 @@ const App: React.FC = () => {
         />
       )}
       {isReportOpen && <Report transactions={transactions} balance={totalBalance} startingBalance={startingBalance} onClose={() => setIsReportOpen(false)} />}
+      {isAboutOpen && <About onClose={() => setIsAboutOpen(false)} generateShareLink={generateShareLink} />}
     </div>
   );
 };

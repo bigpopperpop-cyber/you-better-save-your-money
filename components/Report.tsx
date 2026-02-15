@@ -61,7 +61,7 @@ const Report: React.FC<ReportProps> = ({ transactions, balance, startingBalance,
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center border-b-2 border-slate-900 pb-6 mb-8">
           <div>
-            <h1 className="text-3xl font-black uppercase tracking-tighter text-slate-900 leading-none">Ryan's Savings Statement</h1>
+            <h1 className="text-3xl font-black uppercase tracking-tighter text-slate-900 leading-none">Savings Statement</h1>
             <p className="text-slate-500 font-bold mt-2">Period: {timeframeLabel}</p>
           </div>
           <div className="text-right">
@@ -165,7 +165,7 @@ const Report: React.FC<ReportProps> = ({ transactions, balance, startingBalance,
              
              <div className="flex flex-col md:flex-row justify-between items-start border-b-4 border-slate-900 pb-10 mb-12 gap-8">
               <div>
-                <h1 className="text-4xl font-black uppercase tracking-tighter text-slate-900 leading-none">Ryan's Savings</h1>
+                <h1 className="text-4xl font-black uppercase tracking-tighter text-slate-900 leading-none">My Savings</h1>
                 <p className="text-slate-500 font-black text-xs uppercase tracking-widest mt-2">{timeframeLabel}</p>
               </div>
               <div className="bg-indigo-600 px-8 py-6 rounded-[2rem] shadow-xl shadow-indigo-100 min-w-[200px]">

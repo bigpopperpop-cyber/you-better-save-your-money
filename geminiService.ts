@@ -7,7 +7,7 @@ export const getFinancialInsights = async (transactions: Transaction[]): Promise
   const apiKey = typeof process !== 'undefined' ? process.env.API_KEY : '';
   
   if (!apiKey) {
-    return "Great job tracking your money, Ryan! Remember that every dollar saved today is a step toward your big goals.";
+    return "Great job tracking your money! Remember that every dollar saved today is a step toward your big goals.";
   }
 
   const ai = new GoogleGenAI({ apiKey });
@@ -17,10 +17,10 @@ export const getFinancialInsights = async (transactions: Transaction[]): Promise
   ).join('\n');
 
   const prompt = `
-    Ryan is a young student tracking his money. Here are his recent transactions:
+    The user is tracking their personal finances. Here are their recent transactions:
     ${transactionSummary}
 
-    Based on this, give Ryan 3 short, encouraging, and easy-to-understand financial tips or insights. 
+    Based on this, give the user 3 short, encouraging, and easy-to-understand financial tips or insights. 
     Keep the tone friendly and motivating. Use bullet points.
   `;
 
@@ -29,9 +29,9 @@ export const getFinancialInsights = async (transactions: Transaction[]): Promise
       model: 'gemini-3-flash-preview',
       contents: prompt,
     });
-    return response.text || "Keep up the great work, Ryan! Consistency is key to growing your savings.";
+    return response.text || "Keep up the great work! Consistency is key to growing your savings.";
   } catch (error) {
     console.error("Gemini Insight Error:", error);
-    return "Nice work on staying organized, Ryan! Keep tracking those transactions to see your habits clearly.";
+    return "Nice work on staying organized! Keep tracking those transactions to see your habits clearly.";
   }
 };
