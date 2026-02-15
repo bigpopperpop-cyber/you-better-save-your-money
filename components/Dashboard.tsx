@@ -65,14 +65,14 @@ const Dashboard: React.FC<DashboardProps> = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 h-full min-h-0">
       {/* Visual Progress Card */}
-      <div className="md:col-span-2 bg-white p-6 lg:p-10 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col min-h-[320px]">
+      <div className="md:col-span-2 bg-white/60 backdrop-blur-xl p-6 lg:p-10 rounded-[2.5rem] shadow-sm border border-emerald-50 flex flex-col min-h-[320px]">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="text-xl font-black text-slate-900 tracking-tight">Total Progress</h3>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Savings over time</p>
           </div>
-          <div className="p-3 bg-indigo-50 rounded-2xl">
-            <ArrowUpRight size={20} className="text-indigo-600" />
+          <div className="p-3 bg-emerald-50 rounded-2xl">
+            <ArrowUpRight size={20} className="text-emerald-600" />
           </div>
         </div>
         
@@ -81,22 +81,22 @@ const Dashboard: React.FC<DashboardProps> = ({
             <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#6366f1" stopOpacity={0.15}/>
-                  <stop offset="100%" stopColor="#6366f1" stopOpacity={0}/>
+                  <stop offset="0%" stopColor="#10b981" stopOpacity={0.15}/>
+                  <stop offset="100%" stopColor="#10b981" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="6 6" vertical={false} stroke="#f1f5f9" />
+              <CartesianGrid strokeDasharray="6 6" vertical={false} stroke="#ecfdf5" />
               <XAxis 
                 dataKey="date" 
                 axisLine={false} 
                 tickLine={false} 
-                tick={{fill: '#cbd5e1', fontSize: 10, fontWeight: 700}}
+                tick={{fill: '#64748b', fontSize: 10, fontWeight: 700}}
                 dy={15}
               />
               <YAxis 
                 axisLine={false} 
                 tickLine={false} 
-                tick={{fill: '#cbd5e1', fontSize: 10, fontWeight: 700}}
+                tick={{fill: '#64748b', fontSize: 10, fontWeight: 700}}
                 tickFormatter={(val) => `$${val}`}
               />
               <Tooltip 
@@ -108,13 +108,13 @@ const Dashboard: React.FC<DashboardProps> = ({
                   fontSize: '12px',
                   fontWeight: 800
                 }}
-                itemStyle={{ color: '#4f46e5' }}
+                itemStyle={{ color: '#059669' }}
                 formatter={(value: number) => [`$${value.toFixed(2)}`, 'Wealth']}
               />
               <Area 
                 type="monotone" 
                 dataKey="balance" 
-                stroke="#4f46e5" 
+                stroke="#059669" 
                 strokeWidth={4}
                 fillOpacity={1} 
                 fill="url(#colorBalance)" 
@@ -126,11 +126,12 @@ const Dashboard: React.FC<DashboardProps> = ({
       </div>
 
       {/* AI Intelligence Section */}
-      <div className="bg-slate-900 p-8 rounded-[2.5rem] flex flex-col justify-between text-white shadow-2xl shadow-slate-900/20 md:h-full overflow-y-auto">
-        <div className="space-y-6">
+      <div className="bg-slate-900 p-8 rounded-[2.5rem] flex flex-col justify-between text-white shadow-2xl shadow-slate-900/20 md:h-full overflow-y-auto relative">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 blur-[60px] pointer-events-none"></div>
+        <div className="space-y-6 z-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center shadow-lg shadow-emerald-500/20">
                 <Sparkles size={16} fill="white" />
               </div>
               <h3 className="text-lg font-black tracking-tight uppercase">Smart Tips</h3>
@@ -138,7 +139,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             <button 
               onClick={onRefreshInsight} 
               disabled={isLoadingInsight || transactions.length === 0}
-              className={`p-2.5 rounded-full transition-all ${isLoadingInsight ? 'bg-indigo-600' : 'bg-slate-800 hover:bg-slate-700'} disabled:opacity-20`}
+              className={`p-2.5 rounded-full transition-all ${isLoadingInsight ? 'bg-emerald-600' : 'bg-slate-800 hover:bg-slate-700'} disabled:opacity-20`}
             >
               <RefreshCw size={18} className={isLoadingInsight ? 'animate-spin' : ''} />
             </button>
@@ -146,7 +147,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
           <div className="relative">
             {aiInsight ? (
-              <div className="text-sm font-medium leading-relaxed text-slate-300 bg-slate-800/50 p-6 rounded-3xl border border-white/5 whitespace-pre-wrap">
+              <div className="text-sm font-medium leading-relaxed text-slate-300 bg-slate-800/40 p-6 rounded-3xl border border-white/5 whitespace-pre-wrap backdrop-blur-sm">
                 {aiInsight}
               </div>
             ) : (
@@ -155,7 +156,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 <button 
                   onClick={onRefreshInsight}
                   disabled={transactions.length === 0}
-                  className="w-full py-4 bg-indigo-600 text-white font-black rounded-2xl shadow-lg transition active:scale-95 disabled:bg-slate-800 disabled:text-slate-600"
+                  className="w-full py-4 bg-emerald-600 text-white font-black rounded-2xl shadow-lg transition active:scale-95 disabled:bg-slate-800 disabled:text-slate-600"
                 >
                   Analyze
                 </button>
@@ -164,10 +165,10 @@ const Dashboard: React.FC<DashboardProps> = ({
           </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-slate-800 shrink-0">
+        <div className="mt-8 pt-6 border-t border-slate-800 shrink-0 z-10">
            <div className="flex justify-between items-center mb-4">
               <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Mastery Progress</p>
-              <button onClick={onShowInfo} className="text-[10px] font-black text-indigo-400 bg-indigo-400/10 px-2 py-1 rounded-md uppercase flex items-center space-x-1 hover:bg-indigo-400 hover:text-white transition-all">
+              <button onClick={onShowInfo} className="text-[10px] font-black text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-md uppercase flex items-center space-x-1 hover:bg-emerald-400 hover:text-white transition-all">
                 <Info size={10} />
                 <span>Novice Guide</span>
               </button>
@@ -178,7 +179,7 @@ const Dashboard: React.FC<DashboardProps> = ({
            </div>
            <div className="h-3 w-full bg-slate-800 rounded-full overflow-hidden p-0.5">
               <div 
-                className="bg-gradient-to-r from-indigo-500 to-indigo-400 h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(99,102,241,0.5)]" 
+                className="bg-gradient-to-r from-emerald-500 to-emerald-400 h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(16,185,129,0.5)]" 
                 style={{ width: `${Math.min((balance / 1000) * 100, 100)}%` }}
               ></div>
            </div>

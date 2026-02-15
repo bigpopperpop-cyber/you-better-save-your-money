@@ -302,11 +302,11 @@ const App: React.FC = () => {
         </div>
 
         <nav className="flex-1 space-y-2">
-          <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all duration-300 ${activeTab === 'dashboard' ? 'bg-emerald-600 shadow-xl' : 'hover:bg-slate-800 opacity-60'}`}>
+          <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all duration-300 ${activeTab === 'dashboard' ? 'bg-emerald-600 shadow-xl shadow-emerald-900/40' : 'hover:bg-slate-800 opacity-60'}`}>
             <LayoutDashboard size={22} strokeWidth={2.5} />
             <span className="font-bold">Home</span>
           </button>
-          <button onClick={() => setActiveTab('ledger')} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all duration-300 ${activeTab === 'ledger' ? 'bg-emerald-600 shadow-xl' : 'hover:bg-slate-800 opacity-60'}`}>
+          <button onClick={() => setActiveTab('ledger')} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all duration-300 ${activeTab === 'ledger' ? 'bg-emerald-600 shadow-xl shadow-emerald-900/40' : 'hover:bg-slate-800 opacity-60'}`}>
             <History size={22} strokeWidth={2.5} />
             <span className="font-bold">History</span>
           </button>
@@ -339,7 +339,7 @@ const App: React.FC = () => {
         className={`flex-1 flex flex-col min-h-0 overflow-hidden relative transition-all duration-200 ${isSharedMode ? 'mt-14' : ''}`}
         style={{ transform: `translateY(${pullDistance}px)` }}
       >
-        <header className="md:hidden pt-[env(safe-area-inset-top,44px)] pb-3 px-6 bg-white/40 backdrop-blur-xl border-b border-white/20 flex items-center justify-between sticky top-0 z-40">
+        <header className="md:hidden pt-[env(safe-area-inset-top,44px)] pb-3 px-6 bg-white/20 backdrop-blur-xl border-b border-emerald-100 flex items-center justify-between sticky top-0 z-40">
            <button onClick={() => setIsDrawerOpen(true)} className="p-2 bg-white/60 rounded-xl border border-white text-slate-900 ios-tap">
              <Menu size={22} strokeWidth={3} />
            </button>
@@ -413,7 +413,7 @@ const App: React.FC = () => {
           {!isSharedMode && (
             <button 
               onClick={() => { setEditingTransaction(null); setIsFormOpen(true); }} 
-              className="plus-btn bg-emerald-600 text-white p-4 md:p-4.5 rounded-[2rem] shadow-xl shadow-emerald-900/30 -mt-10 md:-mt-12 ring-[8px] md:ring-[10px] ring-white/60 backdrop-blur-sm ios-tap"
+              className="plus-btn bg-emerald-600 text-white p-4 md:p-4.5 rounded-[2rem] shadow-xl shadow-emerald-900/30 -mt-10 md:-mt-12 ring-[8px] md:ring-[10px] ring-white/20 backdrop-blur-sm ios-tap"
             >
               <Plus size={32} strokeWidth={3} />
             </button>

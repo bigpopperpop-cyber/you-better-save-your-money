@@ -98,19 +98,19 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, onSubmit, on
                 step="0.01" 
                 value={formData.amount || ''} 
                 onChange={(e) => setFormData({...formData, amount: parseFloat(e.target.value)})} 
-                className="w-full pl-14 pr-6 py-8 bg-slate-50 border-2 border-slate-100 rounded-[2rem] focus:border-indigo-500 focus:bg-white outline-none text-5xl font-black text-slate-900 transition-all placeholder:text-slate-200" 
+                className="w-full pl-14 pr-6 py-8 bg-slate-50 border-2 border-slate-100 rounded-[2rem] focus:border-emerald-500 focus:bg-white outline-none text-5xl font-black text-slate-900 transition-all placeholder:text-slate-200" 
                 placeholder="0.00" 
               />
             </div>
           </div>
 
-          <div className="flex bg-slate-100 p-2 rounded-[2rem] border border-slate-200">
-            <button type="button" onClick={() => setFormData({...formData, type: TransactionType.DEPOSIT})} className={`flex-1 py-5 text-xs font-black uppercase tracking-widest rounded-[1.5rem] transition-all duration-300 ios-tap ${formData.type === TransactionType.DEPOSIT ? 'bg-white shadow-md text-green-600' : 'text-slate-400'}`}>Deposit (+)</button>
+          <div className="flex bg-emerald-50/50 p-2 rounded-[2rem] border border-emerald-100">
+            <button type="button" onClick={() => setFormData({...formData, type: TransactionType.DEPOSIT})} className={`flex-1 py-5 text-xs font-black uppercase tracking-widest rounded-[1.5rem] transition-all duration-300 ios-tap ${formData.type === TransactionType.DEPOSIT ? 'bg-white shadow-md text-emerald-600' : 'text-slate-400'}`}>Deposit (+)</button>
             <button type="button" onClick={() => setFormData({...formData, type: TransactionType.WITHDRAWAL})} className={`flex-1 py-5 text-xs font-black uppercase tracking-widest rounded-[1.5rem] transition-all duration-300 ios-tap ${formData.type === TransactionType.WITHDRAWAL ? 'bg-white shadow-md text-rose-600' : 'text-slate-400'}`}>Withdraw (-)</button>
           </div>
 
           <div className="space-y-3">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Category (Tap to select, 'X' to remove)</label>
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Category</label>
             <div className="grid grid-cols-3 gap-2">
               {categories.map((cat) => (
                 <div key={cat} className="relative group">
@@ -119,7 +119,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, onSubmit, on
                     onClick={() => { setIsCustomCategoryMode(false); setFormData({...formData, category: cat}); }} 
                     className={`w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-tighter transition-all border ios-tap h-full flex items-center justify-center text-center px-2 ${
                       !isCustomCategoryMode && formData.category === cat 
-                      ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' 
+                      ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg' 
                       : 'bg-white border-slate-100 text-slate-500 shadow-sm'
                     }`}
                   >
@@ -129,7 +129,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, onSubmit, on
                     type="button" 
                     onClick={(e) => { e.stopPropagation(); onDeleteCategory(cat); }}
                     className={`absolute -top-1.5 -right-1.5 p-2 rounded-full shadow-lg ios-tap z-10 ${
-                       !isCustomCategoryMode && formData.category === cat ? 'bg-indigo-800 text-white' : 'bg-rose-500 text-white'
+                       !isCustomCategoryMode && formData.category === cat ? 'bg-emerald-800 text-white' : 'bg-rose-500 text-white'
                     }`}
                   >
                     <X size={10} strokeWidth={4} />
@@ -140,7 +140,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, onSubmit, on
                 type="button" 
                 onClick={() => setIsCustomCategoryMode(true)} 
                 className={`py-4 rounded-2xl text-[10px] font-black uppercase tracking-tighter transition-all border flex items-center justify-center space-x-1 ios-tap ${
-                  isCustomCategoryMode ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-slate-50 border-slate-200 text-slate-400'
+                  isCustomCategoryMode ? 'bg-emerald-600 border-emerald-600 text-white' : 'bg-slate-50 border-slate-200 text-slate-400'
                 }`}
               >
                 <Plus size={14} strokeWidth={3} />
@@ -153,7 +153,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, onSubmit, on
                 type="text" 
                 value={customCategoryInput} 
                 onChange={(e) => setCustomCategoryInput(e.target.value)} 
-                className="w-full px-6 py-5 bg-white border-2 border-indigo-500 rounded-2xl outline-none font-bold text-base mt-2" 
+                className="w-full px-6 py-5 bg-white border-2 border-emerald-500 rounded-2xl outline-none font-bold text-base mt-2" 
                 placeholder="Type new category..." 
                 autoFocus 
               />
@@ -162,15 +162,15 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, onSubmit, on
 
           <div className="space-y-2">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Description</label>
-            <input type="text" value={formData.comment} onChange={(e) => setFormData({...formData, comment: e.target.value})} className="w-full px-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-indigo-500 focus:bg-white outline-none font-bold text-base transition-all" placeholder="e.g. Allowance from Grandma" />
+            <input type="text" value={formData.comment} onChange={(e) => setFormData({...formData, comment: e.target.value})} className="w-full px-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-emerald-500 focus:bg-white outline-none font-bold text-base transition-all" placeholder="e.g. Weekly Allowance" />
           </div>
 
           <div className="space-y-2">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Date</label>
-            <input type="date" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} className="w-full px-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-indigo-500 focus:bg-white outline-none font-bold text-base transition-all" />
+            <input type="date" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} className="w-full px-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-emerald-500 focus:bg-white outline-none font-bold text-base transition-all" />
           </div>
 
-          <button type="submit" className="w-full bg-slate-900 text-white font-black uppercase tracking-widest py-6 rounded-[2rem] flex items-center justify-center space-x-3 shadow-2xl shadow-slate-200 ios-tap">
+          <button type="submit" className="w-full bg-slate-900 text-white font-black uppercase tracking-widest py-6 rounded-[2rem] flex items-center justify-center space-x-3 shadow-2xl shadow-emerald-200/20 ios-tap">
             <Save size={24} strokeWidth={3} />
             <span>Save Entry</span>
           </button>
