@@ -27,6 +27,7 @@
         -webkit-tap-highlight-color: transparent;
         position: fixed;
         width: 100%;
+        overscroll-behavior: none;
       }
       @media print {
         .no-print { display: none !important; }
@@ -51,27 +52,33 @@
       .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
       /* Handling limited vertical space in landscape */
-      @media (max-height: 500px) {
+      @media (max-height: 500px) and (orientation: landscape) {
         .landscape-compact-nav {
-          height: 60px !important;
-          bottom: 12px !important;
-          padding-left: 30px !important;
-          padding-right: 30px !important;
+          height: 54px !important;
+          bottom: 8px !important;
+          padding-left: 20px !important;
+          padding-right: 20px !important;
+          border-radius: 1.5rem !important;
         }
         .landscape-compact-nav svg {
           width: 20px !important;
           height: 20px !important;
         }
         .landscape-compact-nav span {
-          font-size: 8px !important;
+          display: none;
         }
         .landscape-compact-nav .plus-btn {
-          margin-top: -30px !important;
-          padding: 10px !important;
+          margin-top: -24px !important;
+          padding: 8px !important;
+          border-radius: 1.2rem !important;
         }
         .landscape-compact-nav .plus-btn svg {
           width: 24px !important;
           height: 24px !important;
+        }
+        header.md\:hidden {
+          padding-top: max(8px, env(safe-area-inset-top)) !important;
+          padding-bottom: 8px !important;
         }
       }
     </style>

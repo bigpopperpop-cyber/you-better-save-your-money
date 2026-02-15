@@ -61,14 +61,21 @@ const App: React.FC = () => {
       }
     }
 
-    // Auto-close drawer on orientation change/resize to desktop
+    // Auto-close drawer and reset layout on resize/orientation change
     const handleResize = () => {
       if (window.innerWidth >= 768) {
         setIsDrawerOpen(false);
       }
+      setPullDistance(0);
+      setIsPulling(false);
     };
+
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
   }, []);
 
   useEffect(() => {
@@ -104,7 +111,7 @@ const App: React.FC = () => {
     
     if (diff > 0 && mainRef.current && mainRef.current.scrollTop === 0) {
       const resistedDiff = Math.pow(diff, 0.8);
-      setPullDistance(Math.min(resistedDiff, 80)); // Slightly less pull for landscape comfort
+      setPullDistance(Math.min(resistedDiff, 80));
       if (diff > 10) e.preventDefault();
     } else {
       setIsPulling(false);
@@ -272,7 +279,7 @@ const App: React.FC = () => {
         </aside>
       </div>
 
-      {/* Desktop Sidebar (Static) */}
+      {/* Desktop Sidebar */}
       <aside className={`no-print hidden md:flex w-72 bg-slate-900 text-white p-8 flex-col space-y-8 h-screen ${isSharedMode ? 'pt-24' : ''}`}>
         <div className="flex items-center space-x-3">
           <div className="p-2.5 bg-indigo-500 rounded-2xl shadow-lg">
@@ -342,14 +349,14 @@ const App: React.FC = () => {
             paddingRight: 'max(1rem, env(safe-area-inset-right))' 
           }}
         >
-          <div className="max-w-5xl mx-auto space-y-6 md:space-y-10">
-            <section className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="max-w-5xl mx-auto space-y-6 md:space-y-10 h-full flex flex-col min-h-0">
+            <section className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 shrink-0">
               <div className="hidden md:block">
                 <h2 className="text-3xl font-black text-slate-900 leading-tight">My <span className="text-indigo-600">Savings</span></h2>
                 <p className="text-slate-500 font-medium">Tracking your financial progress.</p>
               </div>
               <div className="w-full lg:w-auto">
-                <div className="p-6 md:p-10 rounded-[2.5rem] bg-slate-900 text-white shadow-2xl relative text-center lg:text-left overflow-hidden">
+                <div className="p-6 md:p-8 lg:p-10 rounded-[2.5rem] bg-slate-900 text-white shadow-2xl relative text-center lg:text-left overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 blur-3xl -mr-10 -mt-10"></div>
                   <p className="text-[10px] font-black uppercase tracking-widest mb-1 text-slate-400">Current Balance</p>
                   <p className="text-4xl md:text-5xl font-black tracking-tighter">${totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
@@ -357,7 +364,7 @@ const App: React.FC = () => {
               </div>
             </section>
 
-            <div className="tab-content pb-10">
+            <div className="tab-content flex-1 min-h-0 pb-10">
               {activeTab === 'dashboard' ? (
                 <Dashboard 
                   transactions={transactions} 
@@ -388,7 +395,7 @@ const App: React.FC = () => {
               onClick={() => { setEditingTransaction(null); setIsFormOpen(true); }} 
               className="plus-btn bg-indigo-600 text-white p-4 md:p-4.5 rounded-[2rem] shadow-xl shadow-indigo-900/30 -mt-10 md:-mt-12 ring-[8px] md:ring-[10px] ring-white ios-tap"
             >
-              <Plus size={32} md:size={36} strokeWidth={3} />
+              <Plus size={32} strokeWidth={3} />
             </button>
           )}
           

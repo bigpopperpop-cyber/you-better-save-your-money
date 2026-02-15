@@ -15,7 +15,6 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ transactions, balance, startingBalance, aiInsight, onRefreshInsight, isLoadingInsight }) => {
   const chartData = useMemo(() => {
-    // If no transactions, still show the starting balance line
     if (transactions.length === 0) {
       const today = new Date().toISOString().split('T')[0];
       const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
@@ -30,7 +29,6 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, balance, startingBa
     let runningBalance = startingBalance;
     const data: ChartDataPoint[] = [];
 
-    // Map by date
     const dailyMap = new Map<string, number>();
     sortedTransactions.forEach(t => {
       const amount = t.type === TransactionType.DEPOSIT ? t.amount : -t.amount;
@@ -39,7 +37,6 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, balance, startingBa
 
     const sortedDates = Array.from(dailyMap.keys()).sort();
     
-    // Initial starting point (day before first transaction)
     const firstDate = new Date(sortedDates[0]);
     const prevDate = new Date(firstDate);
     prevDate.setDate(firstDate.getDate() - 1);
@@ -57,10 +54,10 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, balance, startingBa
   }, [transactions, startingBalance]);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 h-full min-h-0">
       {/* Visual Progress Card */}
-      <div className="lg:col-span-2 bg-white p-6 md:p-10 rounded-[2.5rem] shadow-sm border border-slate-100">
-        <div className="flex items-center justify-between mb-8">
+      <div className="md:col-span-2 bg-white p-6 lg:p-10 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col min-h-[320px]">
+        <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="text-xl font-black text-slate-900 tracking-tight">Total Progress</h3>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Savings over time</p>
@@ -70,7 +67,7 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, balance, startingBa
           </div>
         </div>
         
-        <div className="h-[280px] w-full">
+        <div className="flex-1 w-full min-h-0">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData}>
               <defs>
@@ -112,7 +109,7 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, balance, startingBa
                 strokeWidth={4}
                 fillOpacity={1} 
                 fill="url(#colorBalance)" 
-                animationDuration={1500}
+                animationDuration={1000}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -120,7 +117,7 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, balance, startingBa
       </div>
 
       {/* AI Intelligence Section */}
-      <div className="bg-slate-900 p-8 rounded-[2.5rem] flex flex-col justify-between text-white shadow-2xl shadow-slate-900/20">
+      <div className="bg-slate-900 p-8 rounded-[2.5rem] flex flex-col justify-between text-white shadow-2xl shadow-slate-900/20 md:h-full overflow-y-auto">
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -138,34 +135,34 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, balance, startingBa
             </button>
           </div>
 
-          <div className="min-h-[160px] relative">
+          <div className="relative">
             {aiInsight ? (
               <div className="text-sm font-medium leading-relaxed text-slate-300 bg-slate-800/50 p-6 rounded-3xl border border-white/5 whitespace-pre-wrap">
                 {aiInsight}
               </div>
             ) : (
-              <div className="text-center py-10 space-y-4">
-                <p className="text-slate-500 text-sm font-bold">Needs more activity to build your financial profile.</p>
+              <div className="text-center py-8 space-y-4">
+                <p className="text-slate-500 text-sm font-bold">Analyze habits to build your profile.</p>
                 <button 
                   onClick={onRefreshInsight}
                   disabled={transactions.length === 0}
                   className="w-full py-4 bg-indigo-600 text-white font-black rounded-2xl shadow-lg transition active:scale-95 disabled:bg-slate-800 disabled:text-slate-600"
                 >
-                  Analyze Habits
+                  Analyze
                 </button>
               </div>
             )}
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-slate-800">
+        <div className="mt-8 pt-6 border-t border-slate-800 shrink-0">
            <div className="flex justify-between items-center mb-4">
               <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Mastery Progress</p>
               <span className="text-[10px] font-black text-indigo-400 bg-indigo-400/10 px-2 py-1 rounded-md uppercase">Novice</span>
            </div>
            <div className="flex justify-between items-end mb-3">
               <span className="text-2xl font-black">${balance.toLocaleString()}</span>
-              <span className="text-xs font-bold text-slate-500">Next Milestone: $1k</span>
+              <span className="text-xs font-bold text-slate-500">Milestone: $1k</span>
            </div>
            <div className="h-3 w-full bg-slate-800 rounded-full overflow-hidden p-0.5">
               <div 
