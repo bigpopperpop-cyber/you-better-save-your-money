@@ -9,6 +9,10 @@ import Report from './components/Report';
 import About from './components/About';
 import { getFinancialInsights } from './geminiService';
 
+/**
+ * Main application component.
+ * Manages state for transactions, categories, and UI views.
+ */
 const App: React.FC = () => {
   // Persistence State - Using sanitized generic keys
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
@@ -26,7 +30,7 @@ const App: React.FC = () => {
     return saved ? parseFloat(saved) : 0;
   });
   
-  // App State
+  // App UI State
   const [activeTab, setActiveTab] = useState<'dashboard' | 'ledger'>('dashboard');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
@@ -46,6 +50,7 @@ const App: React.FC = () => {
   const startY = useRef(0);
   const mainRef = useRef<HTMLElement>(null);
 
+  // Initialize from shared link if present
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const dataParam = params.get('share');
@@ -79,6 +84,7 @@ const App: React.FC = () => {
     };
   }, []);
 
+  // Save data to localStorage
   useEffect(() => {
     if (!isSharedMode) {
       localStorage.setItem('money-monitor-v2-data', JSON.stringify(transactions));
@@ -97,7 +103,7 @@ const App: React.FC = () => {
     }, 0);
   }, [transactions, startingBalance]);
 
-  // Pull to refresh logic
+  // Pull to refresh logic for fetching insights
   const handleTouchStart = (e: React.TouchEvent) => {
     if (mainRef.current && mainRef.current.scrollTop === 0) {
       startY.current = e.touches[0].pageY;
@@ -200,7 +206,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="h-full w-full flex flex-col md:flex-row bg-transparent text-slate-900 overflow-hidden select-none">
+    <div className="h-full w-full flex flex-col md:flex-row bg-slate-50 text-slate-900 overflow-hidden select-none">
       {isSharedMode && (
         <div className="fixed top-0 left-0 right-0 z-[120] bg-emerald-600 text-white pt-10 pb-3 px-4 flex items-center justify-between shadow-xl safe-top">
           <div className="flex items-center space-x-2">
@@ -230,245 +236,247 @@ const App: React.FC = () => {
       {/* Mobile Sidebar Drawer */}
       <div 
         className={`fixed inset-0 z-[200] transition-opacity duration-300 md:hidden ${isDrawerOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-        onClick={() => setIsDrawerOpen(false)}
       >
-        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" />
+        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsDrawerOpen(false)} />
         <aside 
-          className={`absolute left-0 top-0 bottom-0 w-[85%] max-w-xs bg-white shadow-2xl transition-transform duration-300 ease-out flex flex-col ${isDrawerOpen ? 'translate-x-0' : '-translate-x-full'}`}
-          onClick={(e) => e.stopPropagation()}
+          className={`absolute left-0 top-0 bottom-0 w-72 bg-white shadow-2xl p-6 flex flex-col transition-transform duration-300 transform ${isDrawerOpen ? 'translate-x-0' : '-translate-x-full'}`}
         >
-          <div className="pt-[env(safe-area-inset-top,40px)] px-8 pb-6 border-b border-slate-100">
-            <div className="flex items-center justify-between">
-               <div className="flex items-center space-x-3">
-                <div className="p-2 bg-emerald-600 rounded-xl shadow-lg"><TrendingUp size={20} className="text-white" /></div>
-                <h2 className="text-xl font-black uppercase tracking-tighter">Menu</h2>
-              </div>
-              <button onClick={() => setIsDrawerOpen(false)} className="p-2 text-slate-400 bg-slate-50 rounded-full ios-tap"><X size={20} /></button>
+          <div className="flex items-center space-x-3 mb-10">
+            <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+              <TrendingUp size={24} />
             </div>
+            <h1 className="text-xl font-black tracking-tighter uppercase">Money Monitor</h1>
           </div>
           
-          <nav className="flex-1 p-6 space-y-2 overflow-y-auto hide-scrollbar">
-             <button onClick={() => { setActiveTab('dashboard'); setIsDrawerOpen(false); }} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all ${activeTab === 'dashboard' ? 'bg-emerald-600 text-white shadow-xl shadow-emerald-100' : 'text-slate-500 active:bg-slate-100'}`}>
-                <LayoutDashboard size={22} strokeWidth={2.5} />
-                <span className="font-bold text-base">Dashboard</span>
-             </button>
-             <button onClick={() => { setActiveTab('ledger'); setIsDrawerOpen(false); }} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all ${activeTab === 'ledger' ? 'bg-emerald-600 text-white shadow-xl shadow-emerald-100' : 'text-slate-500 active:bg-slate-100'}`}>
-                <History size={22} strokeWidth={2.5} />
-                <span className="font-bold text-base">Activity History</span>
-             </button>
-             <div className="h-px bg-slate-100 my-4" />
-             <button onClick={() => { setIsAboutOpen(true); setIsDrawerOpen(false); }} className="w-full flex items-center space-x-4 px-5 py-4 rounded-2xl text-slate-500 active:bg-slate-100">
-                <HelpCircle size={22} />
-                <span className="font-bold text-base">Guide & FAQ</span>
-             </button>
-             <button onClick={() => { setIsReportOpen(true); setIsDrawerOpen(false); }} className="w-full flex items-center space-x-4 px-5 py-4 rounded-2xl text-slate-500 active:bg-slate-100">
-                <FileText size={22} />
-                <span className="font-bold text-base">Reports & Printing</span>
-             </button>
-             <button onClick={() => { setIsSettingsOpen(true); setIsDrawerOpen(false); }} className="w-full flex items-center space-x-4 px-5 py-4 rounded-2xl text-slate-500 active:bg-slate-100">
-                <Settings2 size={22} />
-                <span className="font-bold text-base">Starting Fund</span>
-             </button>
-             <button onClick={() => { generateShareLink(); setIsDrawerOpen(false); }} className="w-full flex items-center space-x-4 px-5 py-4 rounded-2xl text-slate-500 active:bg-slate-100">
-                <Share2 size={22} />
-                <span className="font-bold text-base">Share Progress</span>
-             </button>
+          <nav className="space-y-2 flex-1">
+            <button 
+              onClick={() => { setActiveTab('dashboard'); setIsDrawerOpen(false); }}
+              className={`w-full flex items-center space-x-3 px-4 py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all ${activeTab === 'dashboard' ? 'bg-emerald-50 text-emerald-600' : 'text-slate-400 hover:bg-slate-50'}`}
+            >
+              <LayoutDashboard size={20} />
+              <span>Dashboard</span>
+            </button>
+            <button 
+              onClick={() => { setActiveTab('ledger'); setIsDrawerOpen(false); }}
+              className={`w-full flex items-center space-x-3 px-4 py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all ${activeTab === 'ledger' ? 'bg-emerald-50 text-emerald-600' : 'text-slate-400 hover:bg-slate-50'}`}
+            >
+              <History size={20} />
+              <span>History</span>
+            </button>
+            <button 
+              onClick={() => { setIsReportOpen(true); setIsDrawerOpen(false); }}
+              className="w-full flex items-center space-x-3 px-4 py-4 rounded-2xl font-black uppercase text-xs tracking-widest text-slate-400 hover:bg-slate-50 transition-all"
+            >
+              <FileText size={20} />
+              <span>Statement</span>
+            </button>
           </nav>
 
-          <div className="p-8 border-t border-slate-100 bg-slate-50/50 pb-[env(safe-area-inset-bottom,20px)]">
-             <div className="flex items-center space-x-3 text-slate-400">
-                <Info size={16} />
-                <span className="text-[10px] font-black uppercase tracking-widest">Money Monitor v2.1</span>
-             </div>
+          <div className="space-y-2 pt-6 border-t border-slate-100">
+            <button onClick={() => { setIsSettingsOpen(true); setIsDrawerOpen(false); }} className="w-full flex items-center space-x-3 px-4 py-4 rounded-2xl font-black uppercase text-xs tracking-widest text-slate-400 hover:bg-slate-50 transition-all">
+              <Settings2 size={20} />
+              <span>Settings</span>
+            </button>
+            <button onClick={() => { setIsAboutOpen(true); setIsDrawerOpen(false); }} className="w-full flex items-center space-x-3 px-4 py-4 rounded-2xl font-black uppercase text-xs tracking-widest text-slate-400 hover:bg-slate-50 transition-all">
+              <HelpCircle size={20} />
+              <span>Help</span>
+            </button>
           </div>
         </aside>
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className={`no-print hidden md:flex w-72 bg-slate-900 text-white p-8 flex-col space-y-8 h-screen ${isSharedMode ? 'pt-24' : ''}`}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="p-2.5 bg-emerald-500 rounded-2xl shadow-lg">
-              <TrendingUp size={28} className="text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-black uppercase tracking-tight">Money</h1>
-              <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Monitor</p>
-            </div>
+      <aside className="hidden md:flex flex-col w-72 bg-white border-r border-slate-100 p-8 h-full shrink-0">
+        <div className="flex items-center space-x-3 mb-12">
+          <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-emerald-100">
+            <TrendingUp size={28} />
           </div>
-          <button onClick={() => setIsAboutOpen(true)} className="p-2 text-slate-500 hover:text-white transition-colors">
-            <HelpCircle size={18} />
-          </button>
+          <div>
+            <h1 className="text-lg font-black tracking-tighter uppercase leading-tight">Money Monitor</h1>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Build Wealth</p>
+          </div>
         </div>
 
-        <nav className="flex-1 space-y-2">
-          <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all duration-300 ${activeTab === 'dashboard' ? 'bg-emerald-600 shadow-xl shadow-emerald-900/40' : 'hover:bg-slate-800 opacity-60'}`}>
-            <LayoutDashboard size={22} strokeWidth={2.5} />
-            <span className="font-bold">Home</span>
+        <nav className="space-y-3 flex-1">
+          <button 
+            onClick={() => setActiveTab('dashboard')}
+            className={`w-full flex items-center space-x-4 px-6 py-5 rounded-[1.5rem] font-black uppercase text-xs tracking-widest transition-all ${activeTab === 'dashboard' ? 'bg-emerald-600 text-white shadow-xl shadow-emerald-100' : 'text-slate-400 hover:bg-slate-50'}`}
+          >
+            <LayoutDashboard size={20} />
+            <span>Dashboard</span>
           </button>
-          <button onClick={() => setActiveTab('ledger')} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all duration-300 ${activeTab === 'ledger' ? 'bg-emerald-600 shadow-xl shadow-emerald-900/40' : 'hover:bg-slate-800 opacity-60'}`}>
-            <History size={22} strokeWidth={2.5} />
-            <span className="font-bold">History</span>
+          <button 
+            onClick={() => setActiveTab('ledger')}
+            className={`w-full flex items-center space-x-4 px-6 py-5 rounded-[1.5rem] font-black uppercase text-xs tracking-widest transition-all ${activeTab === 'ledger' ? 'bg-emerald-600 text-white shadow-xl shadow-emerald-100' : 'text-slate-400 hover:bg-slate-50'}`}
+          >
+            <History size={20} />
+            <span>History</span>
           </button>
-          <button onClick={() => setIsAboutOpen(true)} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all duration-300 text-slate-400 hover:bg-slate-800 opacity-60`}>
-            <BookOpen size={22} />
-            <span className="font-bold">App Guide</span>
+          <button 
+            onClick={() => setIsReportOpen(true)}
+            className="w-full flex items-center space-x-4 px-6 py-5 rounded-[1.5rem] font-black uppercase text-xs tracking-widest text-slate-400 hover:bg-slate-50 transition-all"
+          >
+            <FileText size={20} />
+            <span>Statement</span>
           </button>
         </nav>
 
-        <div className="space-y-3 pt-6 border-t border-slate-800/50">
-          {!isSharedMode && (
-            <button onClick={() => { setEditingTransaction(null); setIsFormOpen(true); }} className="w-full bg-white text-emerald-600 font-black py-4 rounded-2xl flex items-center justify-center space-x-3 ios-tap hover:bg-emerald-50 transition-colors">
-              <Plus size={22} strokeWidth={3} />
-              <span>Add Entry</span>
-            </button>
-          )}
-          <button onClick={() => setIsReportOpen(true)} className="w-full bg-slate-800 text-white font-bold py-3.5 rounded-2xl flex items-center justify-center space-x-2 transition">
-            <FileText size={18} />
-            <span>Reports</span>
+        <div className="space-y-3 pt-8 border-t border-slate-50">
+          <button onClick={() => setIsSettingsOpen(true)} className="w-full flex items-center space-x-4 px-6 py-5 rounded-[1.5rem] font-black uppercase text-xs tracking-widest text-slate-400 hover:bg-slate-50 transition-all">
+            <Settings2 size={20} />
+            <span>Settings</span>
           </button>
-          <button onClick={generateShareLink} className="w-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 font-black py-3 rounded-2xl flex items-center justify-center space-x-2 transition">
-            <Share2 size={16} />
-            <span className="text-xs uppercase tracking-widest">Share</span>
+          <button onClick={() => setIsAboutOpen(true)} className="w-full flex items-center space-x-4 px-6 py-5 rounded-[1.5rem] font-black uppercase text-xs tracking-widest text-slate-400 hover:bg-slate-50 transition-all">
+            <HelpCircle size={20} />
+            <span>Help</span>
           </button>
         </div>
       </aside>
 
-      {/* Main Container */}
-      <div 
-        className={`flex-1 flex flex-col min-h-0 overflow-hidden relative transition-all duration-200 ${isSharedMode ? 'mt-14' : ''}`}
-        style={{ transform: `translateY(${pullDistance}px)` }}
-      >
-        <header className="md:hidden pt-[env(safe-area-inset-top,44px)] pb-3 px-6 bg-white/20 backdrop-blur-xl border-b border-emerald-100 flex items-center justify-between sticky top-0 z-40">
-           <button onClick={() => setIsDrawerOpen(true)} className="p-2 bg-white/60 rounded-xl border border-white text-slate-900 ios-tap">
-             <Menu size={22} strokeWidth={3} />
-           </button>
-           
-           <div className="flex items-center space-x-2">
-            <h1 className="text-lg font-black tracking-tighter text-slate-900 uppercase">Money Monitor</h1>
-            {!isSharedMode && showSavedToast && <CheckCircle size={14} className="text-emerald-500" />}
+      {/* Main Content */}
+      <main ref={mainRef} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} className="flex-1 h-full overflow-y-auto bg-slate-50 p-6 md:p-12 md:pb-24 pb-32 relative">
+        <header className="flex items-center justify-between mb-10 md:mb-16">
+          <div className="md:hidden">
+            <button onClick={() => setIsDrawerOpen(true)} className="p-3 bg-white rounded-2xl shadow-sm border border-slate-100">
+              <Menu size={24} className="text-slate-600" />
+            </button>
           </div>
-          
-          <button onClick={() => setIsAboutOpen(true)} className="p-2 bg-emerald-50/60 rounded-xl text-emerald-600 ios-tap border border-emerald-100">
-             <HelpCircle size={22} strokeWidth={3} />
-           </button>
+          <div className="hidden md:block">
+            <h2 className="text-3xl font-black text-slate-900 tracking-tight capitalize">
+              {activeTab === 'dashboard' ? 'Overview' : 'Record Book'}
+            </h2>
+            <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mt-1">
+              {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
+            </p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="bg-white px-6 py-3 rounded-2xl shadow-sm border border-slate-100 text-right hidden sm:block">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Available Funds</p>
+              <p className="text-xl font-black text-emerald-600">${totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+            </div>
+            {!isSharedMode && (
+              <button 
+                onClick={() => setIsFormOpen(true)}
+                className="p-4 bg-emerald-600 text-white rounded-2xl shadow-xl shadow-emerald-100 hover:scale-105 transition-transform active:scale-95"
+              >
+                <Plus size={24} strokeWidth={3} />
+              </button>
+            )}
+          </div>
         </header>
 
-        <main 
-          ref={mainRef}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          className="flex-1 overflow-y-auto px-4 md:px-12 pt-6 pb-28 md:pb-12 hide-scrollbar"
-          style={{ 
-            paddingLeft: 'max(1rem, env(safe-area-inset-left))', 
-            paddingRight: 'max(1rem, env(safe-area-inset-right))' 
-          }}
+        {activeTab === 'dashboard' ? (
+          <Dashboard 
+            transactions={transactions} 
+            balance={totalBalance} 
+            startingBalance={startingBalance}
+            aiInsight={aiInsight}
+            onRefreshInsight={fetchInsights}
+            isLoadingInsight={isLoadingInsight}
+            onShowInfo={() => setIsAboutOpen(true)}
+          />
+        ) : (
+          <Ledger 
+            transactions={transactions} 
+            onEdit={handleEditRequest} 
+            onDelete={handleDeleteTransaction}
+            isReadOnly={isSharedMode}
+          />
+        )}
+      </main>
+
+      {/* Mobile Bottom Tab Bar */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-slate-100 px-6 py-4 flex items-center justify-around z-50 safe-bottom">
+        <button 
+          onClick={() => setActiveTab('dashboard')}
+          className={`flex flex-col items-center space-y-1 transition-all ${activeTab === 'dashboard' ? 'text-emerald-600' : 'text-slate-300'}`}
         >
-          <div className="max-w-5xl mx-auto space-y-6 md:space-y-10 h-full flex flex-col min-h-0">
-            <section className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 shrink-0">
-              <div className="hidden md:block">
-                <h2 className="text-3xl font-black text-slate-900 leading-tight">My <span className="text-emerald-600">Savings</span></h2>
-                <p className="text-slate-500 font-medium">Tracking your financial progress.</p>
-              </div>
-              <div className="w-full lg:w-auto">
-                <div className="p-6 md:p-8 lg:p-10 rounded-[2.5rem] bg-slate-900 text-white shadow-2xl relative text-center lg:text-left overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/20 blur-3xl -mr-10 -mt-10"></div>
-                  <p className="text-[10px] font-black uppercase tracking-widest mb-1 text-slate-400">Current Balance</p>
-                  <p className="text-4xl md:text-5xl font-black tracking-tighter">${totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
-                  <button onClick={() => setIsAboutOpen(true)} className="mt-4 text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:text-white transition-colors underline underline-offset-4">
-                    Learn how your data is saved
-                  </button>
-                </div>
-              </div>
-            </section>
+          <LayoutDashboard size={24} strokeWidth={activeTab === 'dashboard' ? 3 : 2} />
+          <span className="text-[10px] font-black uppercase tracking-tighter">Home</span>
+        </button>
+        <button 
+          onClick={() => setIsFormOpen(true)}
+          className="w-14 h-14 bg-emerald-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-emerald-200 -mt-10 border-4 border-slate-50"
+        >
+          <Plus size={28} strokeWidth={3} />
+        </button>
+        <button 
+          onClick={() => setActiveTab('ledger')}
+          className={`flex flex-col items-center space-y-1 transition-all ${activeTab === 'ledger' ? 'text-emerald-600' : 'text-slate-300'}`}
+        >
+          <History size={24} strokeWidth={activeTab === 'ledger' ? 3 : 2} />
+          <span className="text-[10px] font-black uppercase tracking-tighter">History</span>
+        </button>
+      </nav>
 
-            <div className="tab-content flex-1 min-h-0 pb-10">
-              {activeTab === 'dashboard' ? (
-                <Dashboard 
-                  transactions={transactions} 
-                  balance={totalBalance} 
-                  startingBalance={startingBalance}
-                  aiInsight={aiInsight} 
-                  onRefreshInsight={fetchInsights} 
-                  isLoadingInsight={isLoadingInsight} 
-                  onShowInfo={() => setIsAboutOpen(true)}
-                />
-              ) : (
-                <Ledger transactions={transactions} onEdit={handleEditRequest} onDelete={handleDeleteTransaction} isReadOnly={isSharedMode} />
-              )}
-            </div>
-          </div>
-        </main>
-
-        <nav className="no-print md:hidden landscape-compact-nav fixed bottom-6 left-6 right-6 h-18 md:h-20 bg-slate-900 rounded-[2.5rem] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] border border-slate-800 flex items-center justify-between px-10 z-[150] animate-in slide-in-from-bottom-10 duration-500">
-          <button 
-            onClick={() => setActiveTab('dashboard')} 
-            className={`flex flex-col items-center space-y-1 transition-all duration-300 ios-tap ${activeTab === 'dashboard' ? 'text-emerald-400 scale-105' : 'text-slate-500'}`}
-          >
-            <LayoutDashboard size={24} strokeWidth={activeTab === 'dashboard' ? 3 : 2} />
-            <span className="text-[10px] font-black uppercase tracking-tighter">Dash</span>
-          </button>
-          
-          {!isSharedMode && (
-            <button 
-              onClick={() => { setEditingTransaction(null); setIsFormOpen(true); }} 
-              className="plus-btn bg-emerald-600 text-white p-4 md:p-4.5 rounded-[2rem] shadow-xl shadow-emerald-900/30 -mt-10 md:-mt-12 ring-[8px] md:ring-[10px] ring-white/20 backdrop-blur-sm ios-tap"
-            >
-              <Plus size={32} strokeWidth={3} />
-            </button>
-          )}
-          
-          <button 
-            onClick={() => setActiveTab('ledger')} 
-            className={`flex flex-col items-center space-y-1 transition-all duration-300 ios-tap ${activeTab === 'ledger' ? 'text-emerald-400 scale-105' : 'text-slate-500'}`}
-          >
-            <History size={24} strokeWidth={activeTab === 'ledger' ? 3 : 2} />
-            <span className="text-[10px] font-black uppercase tracking-tighter">Logs</span>
-          </button>
-        </nav>
-      </div>
-
-      {isSettingsOpen && (
-        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-in fade-in duration-300">
-           <div className="bg-white w-full max-sm p-8 rounded-[3rem] shadow-2xl animate-in zoom-in-95 duration-200">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Starting Fund</h3>
-                <button onClick={() => setIsSettingsOpen(false)} className="p-2 bg-slate-50 rounded-full ios-tap"><X size={20} /></button>
-              </div>
-              <p className="text-sm text-slate-500 font-medium mb-6">What balance did you start with?</p>
-              <div className="relative mb-8">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-black text-xl">$</span>
-                <input 
-                  type="number" 
-                  inputMode="decimal"
-                  step="0.01"
-                  value={tempStartBalance}
-                  onChange={(e) => setTempStartBalance(e.target.value)}
-                  className="w-full pl-10 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-emerald-500 outline-none text-2xl font-black"
-                />
-              </div>
-              <button 
-                onClick={handleSaveStartingBalance}
-                className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest ios-tap"
-              >
-                Set Amount
-              </button>
-           </div>
-        </div>
-      )}
-
+      {/* Overlays */}
       {isFormOpen && (
         <TransactionForm 
           onClose={() => { setIsFormOpen(false); setEditingTransaction(null); }} 
-          onSubmit={handleAddOrEditTransaction} 
+          onSubmit={handleAddOrEditTransaction}
           onDeleteCategory={handleDeleteCategory}
           categories={categories}
           initialData={editingTransaction}
         />
       )}
-      {isReportOpen && <Report transactions={transactions} balance={totalBalance} startingBalance={startingBalance} onClose={() => setIsReportOpen(false)} />}
-      {isAboutOpen && <About onClose={() => setIsAboutOpen(false)} generateShareLink={generateShareLink} />}
+
+      {isReportOpen && (
+        <Report 
+          transactions={transactions} 
+          balance={totalBalance} 
+          startingBalance={startingBalance} 
+          onClose={() => setIsReportOpen(false)} 
+        />
+      )}
+
+      {isAboutOpen && (
+        <About 
+          onClose={() => setIsAboutOpen(false)} 
+          generateShareLink={generateShareLink}
+        />
+      )}
+
+      {isSettingsOpen && (
+        <div className="fixed inset-0 z-[600] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+           <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 overflow-hidden animate-in zoom-in-95 duration-300">
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Settings</h3>
+                <button onClick={() => setIsSettingsOpen(false)} className="p-2 text-slate-400 hover:bg-slate-50 rounded-full">
+                  <X size={24} />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Starting Fund</label>
+                    <div className="relative">
+                       <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-slate-400">$</span>
+                       <input 
+                         type="number" 
+                         value={tempStartBalance} 
+                         onChange={(e) => setTempStartBalance(e.target.value)}
+                         className="w-full pl-10 pr-4 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-emerald-500 outline-none font-bold text-lg transition-all"
+                       />
+                    </div>
+                    <p className="text-[10px] font-medium text-slate-400 leading-relaxed px-1">How much money did you have before you started using the app?</p>
+                 </div>
+
+                 <button 
+                   onClick={handleSaveStartingBalance}
+                   className="w-full bg-slate-900 text-white font-black uppercase tracking-widest py-5 rounded-2xl shadow-xl hover:bg-slate-800 transition active:scale-95"
+                 >
+                   Update Settings
+                 </button>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {/* Success Toast */}
+      <div className={`fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] px-6 py-3 bg-slate-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest flex items-center space-x-2 shadow-2xl transition-all duration-500 ${showSavedToast ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}`}>
+        <CheckCircle size={14} className="text-emerald-400" />
+        <span>Data Secured</span>
+      </div>
     </div>
   );
 };

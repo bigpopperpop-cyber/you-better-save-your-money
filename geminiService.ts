@@ -2,15 +2,13 @@
 import { GoogleGenAI } from "@google/genai";
 import { Transaction } from "./types";
 
+/**
+ * Generates financial insights using the Gemini API based on user transactions.
+ * Follows the @google/genai guidelines for initialization and content generation.
+ */
 export const getFinancialInsights = async (transactions: Transaction[]): Promise<string> => {
-  // Safe access for process.env
-  const apiKey = typeof process !== 'undefined' ? process.env.API_KEY : '';
-  
-  if (!apiKey) {
-    return "Great job tracking your money! Remember that every dollar saved today is a step toward your big goals.";
-  }
-
-  const ai = new GoogleGenAI({ apiKey });
+  // Always use this pattern for GoogleGenAI initialization with named parameter.
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const transactionSummary = transactions.slice(-10).map(t => 
     `${t.date}: ${t.type} of $${t.amount} for ${t.category} (${t.comment})`
@@ -25,10 +23,13 @@ export const getFinancialInsights = async (transactions: Transaction[]): Promise
   `;
 
   try {
+    // Basic Text Tasks: 'gemini-3-flash-preview' as per guidelines.
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: prompt,
     });
+    
+    // response.text is a property, not a method.
     return response.text || "Keep up the great work! Consistency is key to growing your savings.";
   } catch (error) {
     console.error("Gemini Insight Error:", error);
